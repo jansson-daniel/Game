@@ -84,10 +84,7 @@ class Game {
                     } else {
                         self.result.innerHTML = 'Bonus!';
                         self.resultSubtitle.innerHTML = 'Extra spin...';
-
-                        setTimeout(() => {
-                            self.getWinner();
-                        }, 1000);
+                        self.getWinner();
                     }
                     playButton.classList.remove('spin');
                 }
