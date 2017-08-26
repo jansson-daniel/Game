@@ -15,7 +15,7 @@ app.use(express.static(publicPath));
 
 app.get('/winner', function (req, res) {
     res.header("Access-Control-Allow-Origin", "*");
-    const result = [Math.floor(Math.random() * 5), Math.floor(Math.random() * 5), Math.floor(Math.random() * 5)];
+    const result = [Math.floor(Math.random() * 6), Math.floor(Math.random() * 6), Math.floor(Math.random() * 6)];
 
     const map = result.reduce(function (prev, cur) {
         prev[cur] = (prev[cur] || 0) + 1;
@@ -35,8 +35,9 @@ app.get('/winner', function (req, res) {
         }
     }
 
-    if (typeOfWin !== 'No win') {
-        bonus = Math.floor(Math.random() * 5) === 1;
+    if (typeOfWin === 'Big win' || typeOfWin === 'Small win') {
+        console.log(Math.round(Math.random()));
+        bonus = Math.round(Math.random()) == 1;
     }
 
     res.send({ result: result.join(' '), win: typeOfWin, bonus });

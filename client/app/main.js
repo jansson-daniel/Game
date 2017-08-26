@@ -2,25 +2,32 @@ class Game {
     constructor () {
         const app = document.getElementById('app');
         const image = this.render();
+
         app.appendChild(image);
 
         this.start = document.getElementById('start');
         this.result = document.getElementById('result');
         this.resultSubtitle = document.getElementById('result-subtitle');
         this.play = start.childNodes[1];
-
         this.winners = [];
-
         this.winPositions = {
             0: -90,
             1: -215,
             2: -340,
             3: -450,
-            4: -575
+            4: -575,
+            5: -700
         };
 
         this.play.addEventListener('click', () => {
-            this.result.innerHTML = '';
+            if (this.bonus === true) {
+                this.result.innerHTML = 'Bonus';
+                this.resultSubtitle.innerHTML = 'Extra spinn';
+            } else {
+                this.result.innerHTML = '';
+                this.resultSubtitle.innerHTML = '';
+            }
+
             this.play.classList.add('spin');
             this.getWinner();
         });
@@ -36,74 +43,76 @@ class Game {
                     this.bonus = data.bonus;
                     this.typeOfWin = data.win;
                     this.winners = data.result.split(' ');
+                    setTimeout(() => { this.startGame(); }, 500);
 
-                    setTimeout(() => {
-                        this.startGame();
-                    }, 1000);
                 }  else if (xmlhttp.status === 400) {
                     console.log('There was an error 400', xmlhttp);
-                }
-                else {
+                } else {
                     console.log('something else other than 200 was returned', xmlhttp);
                 }
             }
         };
 
-        //xmlhttp.open("GET", "http://127.0.0.1:8080/winner", true);
-        xmlhttp.open("GET", "https://game-slotmachine.herokuapp.com/winner", true);
+        xmlhttp.open("GET", "http://127.0.0.1:8080/winner", true);
+        //xmlhttp.open("GET", "https://game-slotmachine.herokuapp.com/winner", true);
         xmlhttp.send();
     }
 
     startGame () {
-        const spinner1 = document.querySelectorAll('.wheel1 .spinner');
-        const spinner2 = document.querySelectorAll('.wheel2 .spinner');
-        const spinner3 = document.querySelectorAll('.wheel3 .spinner');
+        const slots = document.querySelectorAll('.spinner');
         const slot1 = document.querySelectorAll('.slot-1');
         const slot2 = document.querySelectorAll('.slot-2');
 
-        this.spin(spinner1, 0);
-        this.spin(spinner2, 1);
-        this.spin(spinner3, 2);
+        this.bindAnimations(slots);
 
-        for (let slot of slot1) { slot.classList.add('spin'); }
-        for (let slot of slot2) { slot.classList.add('spin2'); }
-
+        for (let slot of slot1) { slot.classList.add('spin') }
+        for (let slot of slot2) { slot.classList.add('spin2') }
     }
 
-    spin (elements, index) {
+    bindAnimations (elements) {
         const self = this;
-        const playButton = document.querySelector('.play img');
-
-        elements.forEach(function(item) {
-            item.addEventListener('webkitAnimationEnd', function () {
-                this.style.top = `${self.winPositions[self.winners[index]]}px`;
-                this.parentNode.childNodes[1].classList.remove('spin');
-                this.parentNode.childNodes[3].classList.remove('spin2');
-
-                if (index === 2) {
-                    if (self.bonus === false) {
-                        self.result.innerHTML = self.typeOfWin;
-                        self.resultSubtitle.innerHTML = '';
-                    } else {
-                        self.result.innerHTML = 'Bonus!';
-                        self.resultSubtitle.innerHTML = 'Extra spin...';
-                        self.bonus = false;
-                        self.getWinner();
-                    }
-                    playButton.classList.remove('spin');
-                }
-            });
+        elements.forEach(function(item, index) {
+            item.addEventListener('webkitAnimationEnd', function(event) {
+                self.handleAnimation(event) }, false
+            );
         });
+    }
+
+    handleAnimation (event) {
+        const self = this;
+        event.target.style.top = `${this.winPositions[this.winners[parseInt(event.target.dataset.id) - 1]]}px`;
+
+        if (event.target.parentNode !== null) {
+            event.target.parentNode.childNodes[1].classList.remove('spin');
+            event.target.parentNode.childNodes[3].classList.remove('spin2');
+            const newone = event.target.cloneNode(true);
+            event.target.parentNode.replaceChild(newone, event.target);
+        }
+
+        if (parseInt(event.target.dataset.id) === 3) {
+            this.result.innerHTML = self.typeOfWin;
+            this.resultSubtitle.innerHTML = '';
+            this.play.classList.remove('spin');
+        }
+
+        if (this.bonus === true) {
+            setTimeout(() => {
+                this.result.innerHTML = 'Bonus!';
+                this.resultSubtitle.innerHTML = 'Extra spin...';
+                const event = new Event('click');
+                self.play.dispatchEvent(event);
+            }, 2000)
+        }
     }
 
     render () {
         const wrapper = document.createElement('div');
         const markup = `
             <h2 id="result-subtitle"></h2>
-            <h1 id="result">Welcome</h1>
+            <h1 id="result">Casino</h1>
             <div id="slot-view">	
 					<div class="wheel1">
-						<div class="spinner slot-1">
+						<div data-id="1" class="spinner slot-1">
 							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
 							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
 							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
@@ -118,7 +127,7 @@ class Game {
 							<div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
 							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
 						</div>
-						<div class="spinner slot-2">
+						<div data-id="1" class="spinner slot-2">
 							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
 							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
 							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
@@ -136,7 +145,7 @@ class Game {
 					</div>
 				
 					<div class="wheel2">
-						<div class="spinner slot-1">
+						<div data-id="2" class="spinner slot-1">
 							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
 							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
 							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
@@ -151,7 +160,7 @@ class Game {
 							<div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
 							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
 						</div>
-						<div class="spinner slot-2">
+						<div data-id="2" class="spinner slot-2">
 							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
 							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
 							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
@@ -168,7 +177,7 @@ class Game {
 						</div>
 					</div>
 					<div class="wheel3">
-						<div class="spinner slot-1">
+						<div data-id="3" class="spinner slot-1">
 							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
 							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
 							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
@@ -183,7 +192,7 @@ class Game {
 							<div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
 							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
 						</div>
-						<div class="spinner slot-2">
+						<div data-id="3" class="spinner slot-2">
 							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
 							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
 							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
