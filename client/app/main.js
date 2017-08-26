@@ -87,6 +87,7 @@ class Game {
                     } else {
                         self.result.innerHTML = 'Bonus!';
                         self.resultSubtitle.innerHTML = 'Extra spin...';
+                        self.bonus = false;
                         self.getWinner();
                     }
                     playButton.classList.remove('spin');
