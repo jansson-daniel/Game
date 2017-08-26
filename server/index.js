@@ -36,7 +36,7 @@ app.get('/winner', function (req, res) {
     }
 
     if (typeOfWin !== 'No win') {
-        bonus = Math.random() > 0.5;
+        bonus = Math.floor(Math.random() * 5) === 1;
     }
 
     res.send({ result: result.join(' '), win: typeOfWin, bonus });
