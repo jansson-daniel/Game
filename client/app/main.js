@@ -36,7 +36,10 @@ class Game {
                     this.bonus = data.bonus;
                     this.typeOfWin = data.win;
                     this.winners = data.result.split(' ');
-                    this.startGame();
+
+                    setTimeout(() => {
+                        this.startGame();
+                    }, 1000);
                 }  else if (xmlhttp.status === 400) {
                     console.log('There was an error 400', xmlhttp);
                 }
