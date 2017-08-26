@@ -35,9 +35,14 @@ app.get('/winner', function (req, res) {
         }
     }
 
+    console.log('typeOfWin', typeOfWin);
+
+
     if (typeOfWin !== 'No win') {
         bonus = Math.floor(Math.random() * 5) === 1;
     }
+
+    console.log('bonus', bonus);
 
     res.send({ result: result.join(' '), win: typeOfWin, bonus });
 });
