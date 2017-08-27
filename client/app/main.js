@@ -70,8 +70,8 @@ class Game {
         };
 
         // server request
-        xmlhttp.open("GET", "http://127.0.0.1:8080/winner", true);
-        //xmlhttp.open("GET", "https://game-slotmachine.herokuapp.com/winner", true);
+        //xmlhttp.open("GET", "http://127.0.0.1:8080/winner", true);
+        xmlhttp.open("GET", "https://game-slotmachine.herokuapp.com/winner", true);
         xmlhttp.send();
     }
 
