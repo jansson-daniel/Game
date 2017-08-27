@@ -36,8 +36,7 @@ app.get('/winner', function (req, res) {
     }
 
     if (typeOfWin === 'Big win' || typeOfWin === 'Small win') {
-        console.log(Math.round(Math.random()));
-        bonus = Math.round(Math.random()) == 1;
+        bonus = true;
     }
 
     res.send({ result: result.join(' '), win: typeOfWin, bonus });
