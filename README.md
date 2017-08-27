@@ -1,7 +1,12 @@
-# webpack-express-boilerplate
-A boilerplate for running a Webpack workflow in Node express
+# Slot-machine
 
-Please read the following article: [The ultimate Webpack setup](http://www.christianalfoni.com/articles/2015_04_19_The-ultimate-webpack-setup) to know more about this boilerplate.
+Description
+A casino slot-machine game. Please add page to your home-screen on mobile plattform for best experience.
+Tested on Chrome, Safari, Firefox, IE11, Android and IOS.
 
-## Running it on Nitrous Pro
-Change the `webpack.config.js` entry point: `webpack-dev-server/client?http://localhost:8080` to point to your test server, for example: `webpack-dev-server/client?http://test-103403.nitrousapp.com:3000`.  
+Techniques
+JavaScript, Node.js (express)
+
+1. Clone the repo
+2. npm install
+3. Port: 8080
