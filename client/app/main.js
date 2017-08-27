@@ -8,7 +8,10 @@ class Game {
         this.start = document.getElementById('start');
         this.result = document.getElementById('result');
         this.resultSubtitle = document.getElementById('result-subtitle');
-        this.play = start.childNodes[1];
+        this.play = document.getElementById('start');
+        this.playButton = document.getElementById('play-button');
+        this.bonus = false;
+        this.previousBonus = false;
         this.winners = [];
         this.winPositions = {
             0: -90,
@@ -19,16 +22,16 @@ class Game {
             5: -700
         };
 
-        this.play.addEventListener('click', () => {
+        this.start.addEventListener('click', (event) => {
             if (this.bonus === true) {
                 this.result.innerHTML = 'Bonus';
-                this.resultSubtitle.innerHTML = 'Extra spinn';
-            } else {
-                this.result.innerHTML = '';
+                this.resultSubtitle.innerHTML = 'Extra spin';
+            } else if (event.target.id === 'play-button') {
+                this.result.innerHTML = 'Good Luck';
                 this.resultSubtitle.innerHTML = '';
             }
 
-            this.play.classList.add('spin');
+            this.playButton.classList.add('spin');
             this.getWinner();
         });
     }
@@ -40,7 +43,7 @@ class Game {
             if (xmlhttp.readyState === XMLHttpRequest.DONE ) {
                 if (xmlhttp.status === 200) {
                     const data = JSON.parse(xmlhttp.responseText);
-                    this.bonus = data.bonus;
+                    this.bonus = this.previousBonus === false ? data.bonus : false;
                     this.typeOfWin = data.win;
                     this.winners = data.result.split(' ');
                     setTimeout(() => { this.startGame(); }, 500);
@@ -63,46 +66,42 @@ class Game {
         const slot1 = document.querySelectorAll('.slot-1');
         const slot2 = document.querySelectorAll('.slot-2');
 
-        this.bindAnimations(slots);
+        this.bindAnimation(slots);
 
         for (let slot of slot1) { slot.classList.add('spin') }
         for (let slot of slot2) { slot.classList.add('spin2') }
     }
 
-    bindAnimations (elements) {
+    bindAnimation (elements) {
         const self = this;
-        elements.forEach(function(item, index) {
-            item.addEventListener('webkitAnimationEnd', function(event) {
-                self.handleAnimation(event) }, false
-            );
+        elements.forEach(function(item) {
+            item.addEventListener('webkitAnimationEnd', function() {
+                this.style.top = `${self.winPositions[self.winners[parseInt(this.dataset.id) - 1]]}px`;
+                this.classList.remove('spin');
+                this.classList.remove('spin2');
+
+                if (this.parentNode !== null) {
+                    const newone = this.cloneNode(true);
+                    this.parentNode.replaceChild(newone, this);
+                }
+
+                if (parseInt(this.dataset.id) === 3) {
+                    self.result.innerHTML = self.typeOfWin;
+                    self.resultSubtitle.innerHTML = '';
+                    self.playButton.classList.remove('spin');
+                }
+
+                if (self.bonus === true && self.previousBonus === false) {
+                    setTimeout(() => {
+                        const event = new Event('click');
+                        self.play.dispatchEvent(event);
+                        self.previousBonus = true;
+                    }, 2000)
+                } else {
+                    self.previousBonus = false;
+                }
+            })
         });
-    }
-
-    handleAnimation (event) {
-        const self = this;
-        event.target.style.top = `${this.winPositions[this.winners[parseInt(event.target.dataset.id) - 1]]}px`;
-
-        if (event.target.parentNode !== null) {
-            event.target.parentNode.childNodes[1].classList.remove('spin');
-            event.target.parentNode.childNodes[3].classList.remove('spin2');
-            const newone = event.target.cloneNode(true);
-            event.target.parentNode.replaceChild(newone, event.target);
-        }
-
-        if (parseInt(event.target.dataset.id) === 3) {
-            this.result.innerHTML = self.typeOfWin;
-            this.resultSubtitle.innerHTML = '';
-            this.play.classList.remove('spin');
-        }
-
-        if (this.bonus === true) {
-            setTimeout(() => {
-                this.result.innerHTML = 'Bonus!';
-                this.resultSubtitle.innerHTML = 'Extra spin...';
-                const event = new Event('click');
-                self.play.dispatchEvent(event);
-            }, 2000)
-        }
     }
 
     render () {
@@ -210,7 +209,7 @@ class Game {
 					</div>
 				</div>
 				<button id="start" class="play">
-				    <img src="../assets/images/button.png" />
+				    <img id="play-button" src="../assets/images/button.png" />
 				</button>
         `;
 
