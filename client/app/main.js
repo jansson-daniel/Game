@@ -1,15 +1,16 @@
 class Game {
     constructor () {
         const app = document.getElementById('app');
-        const image = this.render();
+        const markup = this.render();
 
-        app.appendChild(image);
+        app.appendChild(markup);
 
         this.start = document.getElementById('start');
         this.result = document.getElementById('result');
         this.resultSubtitle = document.getElementById('result-subtitle');
         this.play = document.getElementById('start');
         this.playButton = document.getElementById('play-button');
+
         this.bonus = false;
         this.previousBonus = false;
         this.winners = [];
@@ -22,18 +23,25 @@ class Game {
             5: -700
         };
 
-        this.start.addEventListener('click', (event) => {
-            if (this.bonus === true) {
-                this.result.innerHTML = 'Bonus';
-                this.resultSubtitle.innerHTML = 'Extra spin';
-            } else if (event.target.id === 'play-button') {
-                this.result.innerHTML = 'Good Luck';
-                this.resultSubtitle.innerHTML = '';
-            }
-
-            this.playButton.classList.add('spin');
-            this.getWinner();
+        this.start.addEventListener('click', (e) => {
+            this.bindStart();
         });
+    }
+
+    bindStart () {
+        // show relevant information for user, bonus/win
+        if (this.bonus === true) {
+            this.result.innerHTML = 'Bonus';
+            this.resultSubtitle.innerHTML = 'Extra spin';
+        } else if (event.target.id === 'play-button') {
+            this.result.innerHTML = 'Good Luck';
+            this.resultSubtitle.innerHTML = '';
+        }
+
+        // add animation to play-button
+        this.playButton.classList.add('spin');
+        // make server request to get result
+        this.getWinner();
     }
 
     getWinner() {
@@ -42,12 +50,18 @@ class Game {
         xmlhttp.onreadystatechange = () => {
             if (xmlhttp.readyState === XMLHttpRequest.DONE ) {
                 if (xmlhttp.status === 200) {
+                    // if response is okej, set variables with data
                     const data = JSON.parse(xmlhttp.responseText);
                     this.bonus = this.previousBonus === false ? data.bonus : false;
                     this.typeOfWin = data.win;
                     this.winners = data.result.split(' ');
-                    setTimeout(() => { this.startGame(); }, 500);
 
+                    // show result for user
+                    setTimeout(() => {
+                        this.startGame();
+                    }, 500);
+
+                // error handling
                 }  else if (xmlhttp.status === 400) {
                     console.log('There was an error 400', xmlhttp);
                 } else {
@@ -56,8 +70,9 @@ class Game {
             }
         };
 
-        xmlhttp.open("GET", "http://127.0.0.1:8080/winner", true);
-        //xmlhttp.open("GET", "https://game-slotmachine.herokuapp.com/winner", true);
+        // server request
+        //xmlhttp.open("GET", "http://127.0.0.1:8080/winner", true);
+        xmlhttp.open("GET", "https://game-slotmachine.herokuapp.com/winner", true);
         xmlhttp.send();
     }
 
@@ -66,16 +81,35 @@ class Game {
         const slot1 = document.querySelectorAll('.slot-1');
         const slot2 = document.querySelectorAll('.slot-2');
 
+        // bind to when animatino ends
         this.bindAnimation(slots);
 
         for (let slot of slot1) { slot.classList.add('spin') }
         for (let slot of slot2) { slot.classList.add('spin2') }
     }
 
+    whichAnimationEvent() {
+        const element = document.createElement("fakeelement");
+        const animations = {
+            "animation": "animationend",
+            "OAnimation": "oAnimationEnd",
+            "MozAnimation": "animationend",
+            "WebkitAnimation": "webkitAnimationEnd"
+        };
+
+        for (let type in animations){
+            if (element.style[type] !== undefined){
+                return animations[type];
+            }
+        }
+    }
+
     bindAnimation (elements) {
         const self = this;
+        const eventType = this.whichAnimationEvent();
+
         elements.forEach(function(item) {
-            item.addEventListener('webkitAnimationEnd', function() {
+            item.addEventListener(eventType, function() {
                 this.style.top = `${self.winPositions[self.winners[parseInt(this.dataset.id) - 1]]}px`;
                 this.classList.remove('spin');
                 this.classList.remove('spin2');
