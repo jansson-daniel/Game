@@ -8,6 +8,58 @@ body {
   background-color: #000000;
 }
 
+#slot-view {
+  margin: 20px auto 20px;
+  position: relative;
+  width: 615px;
+  height: 309px;
+  padding-right: 2px;
+  padding-left: 2px;
+  overflow: hidden;
+  border-radius: 8px;
+  background-image: url(../images/OS78CU0.png);
+  background-size: 800px;
+  background-position: 0px -103px;
+  background-repeat: no-repeat;
+}
+
+.wheel1 {
+  margin-left: 50px !important;
+}
+
+.wheel1, .wheel2, .wheel3 {
+  margin: 51px 1px 0px 2px;
+  background-color: transparent;
+  width: 170px;
+  overflow: hidden;
+  height: 203px;
+  position: relative;
+  float: left;
+  border-radius: 7px;
+}
+
+#result {
+  font-family: budo, 'sans-serif';
+  font-weight: bold;
+  color: #73ba3b;
+  font-size: 100px;
+  text-transform: uppercase;
+  text-shadow: 2px 2px #fff;
+  text-align: center;
+  margin: 0;
+  height: 115px;
+}
+
+#result-subtitle {
+  color: #73ba3b;
+  font-family: budo, 'sans-serif';
+  text-shadow: 2px 2px #fff;
+  text-align: center;
+  font-size: 40px;
+  height: 40px;
+  margin: 50px 0 0 0;
+}
+
 .spinner {
   width: 170px;
   overflow: hidden;
@@ -16,6 +68,39 @@ body {
   text-align: center;
   top: -90px;
 }
+
+.spinner img {
+  padding: 10px;
+  width: 100px;
+  height: 100px;
+}
+
+.play {
+  padding: 10px;
+  margin: 0 auto;
+  background-color: transparent;
+  font-size: 26px;
+  text-align: center;
+  color: #555;
+  border: none;
+  display: block;
+  border-radius: 5px;
+  outline: 0;
+  cursor: pointer;
+}
+
+.play img {
+  height: 80px;
+  vertical-align: middle;
+}
+
+.play img.spin {
+  animation-name: rotate;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
 .spin {
   -moz-animation:   spin  1s linear;
   -ms-animation:    spin  1s linear;
@@ -86,96 +171,9 @@ body {
   0%  {top: -1560px;}
   100%{top: -90px;}
 }
-.wheel1, .wheel2, .wheel3 {
-  margin: 51px 1px 0px 2px;
-  background-color: transparent;
-  width: 170px;
-  overflow: hidden;
-  height: 203px;
-  position: relative;
-  float: left;
-  border-radius: 7px;
-}
 
-.wheel1 {
-  margin-left: 50px;
-}
-
-.spinner img {
-  padding: 10px;
-  width: 100px;
-  height: 100px;
-}
-#slot-view {
-  margin: 20px auto 20px;
-  position: relative;
-  width: 615px;
-  height: 309px;
-  padding-right: 2px;
-  padding-left: 2px;
-  overflow: hidden;
-  border-radius: 8px;
-  background-image: url(../images/OS78CU0.png);
-  background-size: 800px;
-  background-position: 0px -103px;
-  background-repeat: no-repeat;
-}
-/* =========== Replay Button  =============  */
-#control-bar {
-  width: 100%;
-  margin-right: auto;
-  margin-left: auto;
-  text-align: center;
-}
-.play {
-  padding: 10px;
-  margin: 0 auto;
-  background-color: transparent;
-  font-size: 26px;
-  text-align: center;
-  color: #555;
-  border: none;
-  display: block;
-  border-radius: 5px;
-  outline: 0;
-  cursor: pointer;
-}
-
-.play img {
-  height: 100px;
-  vertical-align: middle;
-}
-
-.play img.spin {
-  animation-name: rotate;
-  animation-duration: 2s;
-  animation-iteration-count: infinite;
-  animation-timing-function: linear;
-}
 
 @keyframes rotate {
   from {transform: rotate(0deg);}
   to {transform: rotate(360deg);}
-}
-
-#result {
-  font-family: budo, 'sans-serif';
-  font-weight: bold;
-  color: #73ba3b;
-  font-size: 100px;
-  text-transform: uppercase;
-  text-shadow: 2px 2px #fff;
-  text-align: center;
-  margin: 0;
-  height: 115px;
-}
-
-#result-subtitle {
-  color: #73ba3b;
-  font-family: budo, 'sans-serif';
-  text-shadow: 2px 2px #fff;
-  text-align: center;
-  font-size: 40px;
-  height: 40px;
-  margin: 50px 0 0 0;
 }

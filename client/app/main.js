@@ -8,7 +8,6 @@ class Game {
         this.start = document.getElementById('start');
         this.result = document.getElementById('result');
         this.resultSubtitle = document.getElementById('result-subtitle');
-        this.play = document.getElementById('start');
         this.playButton = document.getElementById('play-button');
 
         this.bonus = false;
@@ -23,7 +22,7 @@ class Game {
             5: -700
         };
 
-        this.start.addEventListener('click', (e) => {
+        this.start.addEventListener('click', () => {
             this.bindStart();
         });
     }
@@ -84,11 +83,13 @@ class Game {
         // bind to when animatino ends
         this.bindAnimation(slots);
 
+        // start animation
         for (let slot of slot1) { slot.classList.add('spin') }
         for (let slot of slot2) { slot.classList.add('spin2') }
     }
 
     whichAnimationEvent() {
+        // Check for browser-specific event
         const element = document.createElement("fakeelement");
         const animations = {
             "animation": "animationend",
@@ -108,27 +109,34 @@ class Game {
         const self = this;
         const eventType = this.whichAnimationEvent();
 
+        // Listen for end of event
         elements.forEach(function(item) {
             item.addEventListener(eventType, function() {
+                // Position the elements according to result
                 this.style.top = `${self.winPositions[self.winners[parseInt(this.dataset.id) - 1]]}px`;
+                // Remove animations
                 this.classList.remove('spin');
                 this.classList.remove('spin2');
 
+                // Reset event-handlers
                 if (this.parentNode !== null) {
                     const newone = this.cloneNode(true);
                     this.parentNode.replaceChild(newone, this);
                 }
 
+                // Display type of win after last slot has stopped
+                // Remove animation from start button
                 if (parseInt(this.dataset.id) === 3) {
                     self.result.innerHTML = self.typeOfWin;
                     self.resultSubtitle.innerHTML = '';
                     self.playButton.classList.remove('spin');
                 }
 
+                // if bonus, simulate user click for free spin
                 if (self.bonus === true && self.previousBonus === false) {
                     setTimeout(() => {
                         const event = new Event('click');
-                        self.play.dispatchEvent(event);
+                        self.start.dispatchEvent(event);
                         self.previousBonus = true;
                     }, 2000)
                 } else {

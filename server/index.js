@@ -13,15 +13,18 @@ bundle();
 
 app.use(express.static(publicPath));
 
+// Result endpoint
 app.get('/winner', function (req, res) {
     res.header("Access-Control-Allow-Origin", "*");
 
+    // generate random numbers
     const result = [
         Math.floor(Math.random() * 6),
         Math.floor(Math.random() * 6),
         Math.floor(Math.random() * 6)
     ];
 
+    // check number of each items
     const nItems = result.reduce(function (prev, cur) {
         prev[cur] = (prev[cur] || 0) + 1;
         return prev;
@@ -30,6 +33,7 @@ app.get('/winner', function (req, res) {
     let typeOfWin = 'No win';
     let bonus = false;
 
+    // Type of win depending on number of each item
     for (let num in nItems) {
         if (nItems.hasOwnProperty(num)) {
             if (parseInt(nItems[num]) === 2) typeOfWin = 'Small win';
@@ -37,6 +41,7 @@ app.get('/winner', function (req, res) {
         }
     }
 
+    // if small or big win - bonus
     if (typeOfWin === 'Big win' || typeOfWin === 'Small win') {
         bonus = true;
     }
