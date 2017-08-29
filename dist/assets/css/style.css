@@ -177,3 +177,50 @@ body {
   from {transform: rotate(0deg);}
   to {transform: rotate(360deg);}
 }
+
+#rotate {
+  display: none;
+}
+
+@media all and (orientation:portrait) {
+  #result-subtitle,
+  #result,
+  #slot-view,
+  #start {
+    display: none;
+  }
+
+  #rotate {
+    display: block;
+    width: 500px;
+    position: absolute;
+    top: 30%;
+    left: 25%;
+  }
+
+  #rotate-text {
+    display: block;
+    font-size: 40px;
+    color: #fff;
+    font-family: 'helfvetica', 'arial', 'sans-serif';
+    text-align: center;
+    margin-top: 100%;
+  }
+}
+
+@media all and (orientation:landscape) {
+  #result-subtitle,
+  #result,
+  #slot-view,
+  #start {
+    display: block;
+  }
+
+  #rotate {
+    display: none;
+  }
+
+  #rotate-text {
+    display: none;
+  }
+}

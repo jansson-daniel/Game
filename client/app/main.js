@@ -149,6 +149,8 @@ class Game {
     render () {
         const wrapper = document.createElement('div');
         const markup = `
+            <img id="rotate" src="../assets/images/rotate.png" />
+            <span id="rotate-text">Pleas rotate device to play</span>
             <h2 id="result-subtitle"></h2>
             <h1 id="result">Casino</h1>
             <div id="slot-view">	
