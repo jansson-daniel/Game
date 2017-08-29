@@ -1,15 +1,28 @@
-# Slot-machine
+# Slot-machine Game
 
-Description
-A casino slot-machine game. Please add page to your home-screen on mobile plattform for best experience.
-Tested on Chrome, Safari, Firefox, IE11, Android and IOS.
+Author: Daniel Jansson
+Date: 29/8-17
+Description: A casino slot-machine game.
+
+Tested on:
+  - desktop:
+    Chrome
+    Safari
+    Firefox
+    IE11
+
+  - mobile:
+    Android and IOS.
 
 Techniques:
-JavaScript
-Node.js (express)
-Webpack
-Babel
-ES6
+    JavaScript
+    Node.js (express)
+    Webpack
+    Babel
+    NPM
+    ES6
 
+Setup:
 1. npm install
-3. Run on port: 8080
+2. npm run start
+3. Runs on port: 8080

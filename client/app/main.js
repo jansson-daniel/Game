@@ -23,12 +23,21 @@ class Game {
         };
 
         this.start.addEventListener('click', () => {
-            this.bindStart();
+            this.startGame();
         });
     }
 
-    bindStart () {
-        // show relevant information for user, bonus/win
+    /**
+     * Starts game when user clicks button
+     * @returns {void}
+     */
+    startGame () {
+        // make server request to get result
+        this.getResult();
+        // add animation to play-button
+        this.playButton.classList.add('spin');
+
+        // show relevant information for user, bonus or win
         if (this.bonus === true) {
             this.result.innerHTML = 'Bonus';
             this.resultSubtitle.innerHTML = 'Extra spin';
@@ -36,28 +45,27 @@ class Game {
             this.result.innerHTML = 'Good Luck';
             this.resultSubtitle.innerHTML = '';
         }
-
-        // add animation to play-button
-        this.playButton.classList.add('spin');
-        // make server request to get result
-        this.getWinner();
     }
 
-    getWinner() {
+    /**
+     * Get result from server
+     * @returns {object} data, array with result and type of win
+     */
+    getResult() {
         const xmlhttp = new XMLHttpRequest();
-
+        // Server request callback
         xmlhttp.onreadystatechange = () => {
             if (xmlhttp.readyState === XMLHttpRequest.DONE ) {
                 if (xmlhttp.status === 200) {
-                    // if response is okej, set variables with data
+                    // if server response is okay, set variables with data
                     const data = JSON.parse(xmlhttp.responseText);
                     this.bonus = this.previousBonus === false ? data.bonus : false;
                     this.typeOfWin = data.win;
                     this.winners = data.result.split(' ');
 
-                    // show result for user
+                    // start visual animation for user
                     setTimeout(() => {
-                        this.startGame();
+                        this.spinSlots();
                     }, 500);
 
                 // error handling
@@ -69,18 +77,22 @@ class Game {
             }
         };
 
-        // server request
+        // server request (local/test-server)
         //xmlhttp.open("GET", "http://127.0.0.1:8080/winner", true);
         xmlhttp.open("GET", "https://game-slotmachine.herokuapp.com/winner", true);
         xmlhttp.send();
     }
 
-    startGame () {
+    /**
+     * Animate symbols and show result visually for user
+     * @returns {object} event
+     */
+    spinSlots () {
         const slots = document.querySelectorAll('.spinner');
         const slot1 = document.querySelectorAll('.slot-1');
         const slot2 = document.querySelectorAll('.slot-2');
 
-        // bind to when animatino ends
+        // bind event to when animation ends
         this.bindAnimation(slots);
 
         // start animation
@@ -88,7 +100,7 @@ class Game {
         for (let slot of slot2) { slot.classList.add('spin2') }
     }
 
-    whichAnimationEvent() {
+    whichAnimationEvent () {
         // Check for browser-specific event
         const element = document.createElement("fakeelement");
         const animations = {
@@ -105,13 +117,17 @@ class Game {
         }
     }
 
+    /**
+     * Fires when animation ends and shows result
+     * @returns {object} event
+     */
     bindAnimation (elements) {
         const self = this;
         const eventType = this.whichAnimationEvent();
 
-        // Listen for end of event
         elements.forEach(function(item) {
-            item.addEventListener(eventType, function() {
+            // Listen for end of event
+            item.addEventListener(eventType, function () {
                 // Position the elements according to result
                 this.style.top = `${self.winPositions[self.winners[parseInt(this.dataset.id) - 1]]}px`;
                 // Remove animations
@@ -146,6 +162,11 @@ class Game {
         });
     }
 
+    /**
+     * Renders markup for game (could have been done
+     * with template engine but no external libraries
+     * was allowed)
+     */
     render () {
         const wrapper = document.createElement('div');
         const markup = `
@@ -154,107 +175,106 @@ class Game {
             <h2 id="result-subtitle"></h2>
             <h1 id="result">Casino</h1>
             <div id="slot-view">	
-					<div class="wheel1">
-						<div data-id="1" class="spinner slot-1">
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
-							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
-							<div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
-							<div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
-							<div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
-							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
-							<div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
-							<div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
-							<div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-						</div>
-						<div data-id="1" class="spinner slot-2">
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
-							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
-							<div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
-							<div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
-							<div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
-							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
-							<div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
-							<div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
-							<div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-						</div>
-					</div>
-				
-					<div class="wheel2">
-						<div data-id="2" class="spinner slot-1">
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
-							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
-							<div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
-							<div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
-							<div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
-							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
-							<div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
-							<div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
-							<div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-						</div>
-						<div data-id="2" class="spinner slot-2">
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
-							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
-							<div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
-							<div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
-							<div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
-							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
-							<div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
-							<div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
-							<div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-						</div>
-					</div>
-					<div class="wheel3">
-						<div data-id="3" class="spinner slot-1">
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
-							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
-							<div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
-							<div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
-							<div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
-							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
-							<div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
-							<div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
-							<div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-						</div>
-						<div data-id="3" class="spinner slot-2">
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
-							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
-							<div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
-							<div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
-							<div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-							<div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
-							<div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
-							<div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
-							<div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
-							<div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
-							<div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
-						</div>
-					</div>
+                <div class="wheel1">
+                    <div data-id="1" class="spinner slot-1">
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                        <div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
+                        <div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
+                        <div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
+                        <div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
+                        <div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                        <div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
+                        <div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
+                        <div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
+                        <div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
+                        <div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                    </div>
+                    <div data-id="1" class="spinner slot-2">
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                        <div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
+                        <div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
+                        <div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
+                        <div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
+                        <div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                        <div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
+                        <div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
+                        <div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
+                        <div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
+                        <div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                    </div>
+                </div>
+                <div class="wheel2">
+                    <div data-id="2" class="spinner slot-1">
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                        <div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
+                        <div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
+                        <div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
+                        <div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
+                        <div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                        <div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
+                        <div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
+                        <div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
+                        <div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
+                        <div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                    </div>
+                    <div data-id="2" class="spinner slot-2">
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                        <div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
+                        <div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
+                        <div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
+                        <div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
+                        <div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                        <div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
+                        <div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
+                        <div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
+                        <div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
+                        <div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                    </div>
 				</div>
-				<button id="start" class="play">
-				    <img id="play-button" src="../assets/images/button.png" />
-				</button>
+                <div class="wheel3">
+                    <div data-id="3" class="spinner slot-1">
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                        <div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
+                        <div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
+                        <div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
+                        <div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
+                        <div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                        <div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
+                        <div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
+                        <div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
+                        <div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
+                        <div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                    </div>
+                    <div data-id="3" class="spinner slot-2">
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                        <div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
+                        <div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
+                        <div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
+                        <div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
+                        <div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                        <div class="wild"> <img src="../assets/images/Symbol_0.png" alt="wild" width="100" height="100"></div>
+                        <div class="strawberry"><img src="../assets/images/Symbol_1.png" alt="strawberry" width="100" height="100"></div>
+                        <div class="pineapple"><img src="../assets/images/Symbol_2.png" alt="pineapple" width="100" height="100"> </div>
+                        <div class="grapes"><img src="../assets/images/Symbol_3.png" alt="grapes" width="100" height="100"></div>
+                        <div class="apple"><img src="../assets/images/Symbol_4.png" alt="apple" width="100" height="100"></div>
+                        <div class="lemon"> <img src="../assets/images/Symbol_5.png" alt="lemon" width="100" height="100"></div>
+                    </div>
+                </div>
+            </div>
+            <button id="start" class="play">
+                <img id="play-button" src="../assets/images/button.png" />
+            </button>
         `;
 
         wrapper.innerHTML = markup;
