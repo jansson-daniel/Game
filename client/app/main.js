@@ -11,7 +11,6 @@ class Game {
         this.playButton = document.getElementById('play-button');
 
         this.bonus = false;
-        this.previousBonus = false;
         this.winners = [];
         this.winPositions = {
             0: -90,
@@ -59,11 +58,12 @@ class Game {
                 if (xmlhttp.status === 200) {
                     // if server response is okay, set variables with data
                     const data = JSON.parse(xmlhttp.responseText);
-                    this.bonus = this.previousBonus === false ? data.bonus : false;
+                    this.bonus = data.bonus;
                     this.typeOfWin = data.win;
                     this.winners = data.result.split(' ');
 
                     // start visual animation for user
+                    // wait 500ms between each spin
                     setTimeout(() => {
                         this.spinSlots();
                     }, 500);
@@ -124,42 +124,41 @@ class Game {
     bindAnimation (elements) {
         const self = this;
         const eventType = this.whichAnimationEvent();
+        const promises = [];
 
-        elements.forEach(function(item) {
-            // Listen for end of event
-            item.addEventListener(eventType, function () {
-                // Position the elements according to result
-                this.style.top = `${self.winPositions[self.winners[parseInt(this.dataset.id) - 1]]}px`;
-                // Remove animations
-                this.classList.remove('spin');
-                this.classList.remove('spin2');
+        elements.forEach((item) => {
+            const promise = new Promise((resolve) => {
+                item.addEventListener(eventType, function () {
+                    self.stopSpin(item, resolve, self);
+                })
+            });
+            promises.push(promise)
+        });
 
-                // Reset event-handlers
-                if (this.parentNode !== null) {
-                    const newone = this.cloneNode(true);
-                    this.parentNode.replaceChild(newone, this);
-                }
-
-                // Display type of win after last slot has stopped
-                // Remove animation from start button
-                if (parseInt(this.dataset.id) === 3) {
-                    self.result.innerHTML = self.typeOfWin;
-                    self.resultSubtitle.innerHTML = '';
-                    self.playButton.classList.remove('spin');
-                }
+        Promise.all(promises)
+            .then(() => {
+                self.result.innerHTML = self.typeOfWin;
+                self.resultSubtitle.innerHTML = '';
+                self.playButton.classList.remove('spin');
 
                 // if bonus, simulate user click for free spin
-                if (self.bonus === true && self.previousBonus === false) {
-                    setTimeout(() => {
-                        const event = new Event('click');
-                        self.start.dispatchEvent(event);
-                        self.previousBonus = true;
-                    }, 2000)
-                } else {
-                    self.previousBonus = false;
+                if (self.bonus === true) {
+                    const event = new Event('click');
+                    self.start.dispatchEvent(event);
                 }
             })
-        });
+            .catch((e) => {
+               console.log('error', e)
+            });
+    }
+
+    stopSpin (item, resolve, self) {
+        // Position the elements according to result
+        // Remove animations
+        item.style.top = `${self.winPositions[self.winners[parseInt(item.dataset.id) - 1]]}px`;
+        item.classList.remove('spin');
+        item.classList.remove('spin2');
+        resolve();
     }
 
     /**
