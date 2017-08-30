@@ -45,10 +45,7 @@ class Game {
     startGame () {
         this.getResult();
 
-        if (this.bonus === true) {
-            this.result.innerHTML = 'Bonus';
-            this.resultSubtitle.innerHTML = 'Extra spin';
-        } else if (event.target.id === 'play-button') {
+        if (this.bonus === false) {
             this.result.innerHTML = 'Good Luck';
             this.resultSubtitle.innerHTML = '';
         }
@@ -140,6 +137,7 @@ class Game {
             });
             promises.push(promise)
         });
+
         this.extraSpin(promises);
     }
 
@@ -154,8 +152,12 @@ class Game {
                 this.playButton.classList.remove('spin');
 
                 if (this.bonus === true) {
-                    const event = new Event('click');
-                    this.start.dispatchEvent(event);
+                    setTimeout(() => {
+                        this.result.innerHTML = 'Bonus';
+                        this.resultSubtitle.innerHTML = 'Extra spin';
+                        const event = new Event('click');
+                        this.start.dispatchEvent(event);
+                    }, 1000);
                 }
             })
             .catch((e) => {
