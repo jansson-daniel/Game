@@ -1,4 +1,15 @@
+/**
+ * Slot-machine - Game
+ * Author: Daniel Jansson
+ * Date: 30/8-17
+ * Description: casino slot-machine game
+ */
 class Game {
+    /**
+     * Sets up initial application parameters
+     * and event-listener on start-button
+     * @returns {void}
+     */
     constructor () {
         const app = document.getElementById('app');
         const markup = this.render();
@@ -28,15 +39,12 @@ class Game {
 
     /**
      * Starts game when user clicks button
+     * show relevant information for user, bonus or win
      * @returns {void}
      */
     startGame () {
-        // make server request to get result
         this.getResult();
-        // add animation to play-button
-        this.playButton.classList.add('spin');
 
-        // show relevant information for user, bonus or win
         if (this.bonus === true) {
             this.result.innerHTML = 'Bonus';
             this.resultSubtitle.innerHTML = 'Extra spin';
@@ -47,28 +55,26 @@ class Game {
     }
 
     /**
-     * Get result from server
+     * Make server request for game result
+     * Set relevant variables with data from server
+     * Start visual animation
      * @returns {object} data, array with result and type of win
      */
     getResult() {
         const xmlhttp = new XMLHttpRequest();
-        // Server request callback
         xmlhttp.onreadystatechange = () => {
             if (xmlhttp.readyState === XMLHttpRequest.DONE ) {
                 if (xmlhttp.status === 200) {
-                    // if server response is okay, set variables with data
                     const data = JSON.parse(xmlhttp.responseText);
                     this.bonus = data.bonus;
                     this.typeOfWin = data.win;
                     this.winners = data.result.split(' ');
 
-                    // start visual animation for user
-                    // wait 500ms between each spin
                     setTimeout(() => {
+                        this.playButton.classList.add('spin');
                         this.spinSlots();
                     }, 500);
 
-                // error handling
                 }  else if (xmlhttp.status === 400) {
                     console.log('There was an error 400', xmlhttp);
                 } else {
@@ -77,14 +83,14 @@ class Game {
             }
         };
 
-        // server request (local/test-server)
         //xmlhttp.open("GET", "http://127.0.0.1:8080/winner", true);
         xmlhttp.open("GET", "https://game-slotmachine.herokuapp.com/winner", true);
         xmlhttp.send();
     }
 
     /**
-     * Animate symbols and show result visually for user
+     * Start animation of the symbols
+     * to show result visually for user
      * @returns {object} event
      */
     spinSlots () {
@@ -92,16 +98,17 @@ class Game {
         const slot1 = document.querySelectorAll('.slot-1');
         const slot2 = document.querySelectorAll('.slot-2');
 
-        // bind event to when animation ends
         this.bindAnimation(slots);
 
-        // start animation
         for (let slot of slot1) { slot.classList.add('spin') }
         for (let slot of slot2) { slot.classList.add('spin2') }
     }
 
+    /**
+     * Check for browser-specific event
+     * @returns {string} type of event event
+     */
     whichAnimationEvent () {
-        // Check for browser-specific event
         const element = document.createElement("fakeelement");
         const animations = {
             "animation": "animationend",
@@ -121,41 +128,49 @@ class Game {
      * Fires when animation ends and shows result
      * @returns {object} event
      */
-    bindAnimation (elements) {
-        const self = this;
+    bindAnimation (slots) {
         const eventType = this.whichAnimationEvent();
         const promises = [];
 
-        elements.forEach((item) => {
+        slots.forEach((slot) => {
             const promise = new Promise((resolve) => {
-                item.addEventListener(eventType, function () {
-                    self.stopSpin(item, resolve, self);
+                slot.addEventListener(eventType, () => {
+                    this.stopSpin(slot, resolve);
                 })
             });
             promises.push(promise)
         });
+        this.extraSpin(promises);
+    }
 
-        Promise.all(promises)
-            .then(() => {
-                self.result.innerHTML = self.typeOfWin;
-                self.resultSubtitle.innerHTML = '';
-                self.playButton.classList.remove('spin');
+    /**
+     * Creates extra spin (simulates user click) if user gets bonus
+     * @returns {void}
+     */
+    extraSpin (promises) {
+        Promise.all(promises).then(() => {
+                this.result.innerHTML = this.typeOfWin;
+                this.resultSubtitle.innerHTML = '';
+                this.playButton.classList.remove('spin');
 
-                // if bonus, simulate user click for free spin
-                if (self.bonus === true) {
+                if (this.bonus === true) {
                     const event = new Event('click');
-                    self.start.dispatchEvent(event);
+                    this.start.dispatchEvent(event);
                 }
             })
             .catch((e) => {
-               console.log('error', e)
+                console.log('error', e)
             });
     }
 
-    stopSpin (item, resolve, self) {
-        // Position the elements according to result
-        // Remove animations
-        item.style.top = `${self.winPositions[self.winners[parseInt(item.dataset.id) - 1]]}px`;
+    /**
+     * Stops animation and positions
+     * the elements according to result
+     * and stop animation
+     * @returns {object} promise
+     */
+    stopSpin (item, resolve) {
+        item.style.top = `${this.winPositions[this.winners[parseInt(item.dataset.id) - 1]]}px`;
         item.classList.remove('spin');
         item.classList.remove('spin2');
         resolve();
