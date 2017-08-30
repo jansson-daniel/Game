@@ -14,7 +14,7 @@ bundle();
 app.use(express.static(publicPath));
 
 // Result endpoint
-app.get('/winner', function (req, res) {
+app.get('/winner', (req, res) => {
     res.header("Access-Control-Allow-Origin", "*");
 
     // generate random numbers
@@ -25,7 +25,7 @@ app.get('/winner', function (req, res) {
     ];
 
     // check number of each items
-    const nItems = result.reduce(function (prev, cur) {
+    const nItems = result.reduce((prev, cur) => {
         prev[cur] = (prev[cur] || 0) + 1;
         return prev;
     }, {});
@@ -43,19 +43,19 @@ app.get('/winner', function (req, res) {
 
     // if small or big win - bonus
     if (typeOfWin === 'Big win' || typeOfWin === 'Small win') {
-        bonus = true;
+        bonus = Math.round(Math.random()) === 1;
     }
 
     res.send({ result: result.join(' '), win: typeOfWin, bonus });
 });
 
-app.all('/build/*', function (req, res) {
+app.all('/build/*', (req, res) => {
   proxy.web(req, res, {
       target: 'http://127.0.0.1:3001'
   });
 });
 
-server.listen(port, function () {
+server.listen(port, () => {
   console.log('Server running on port ' + port);
 });
 
