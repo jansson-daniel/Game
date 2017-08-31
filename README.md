@@ -27,4 +27,4 @@ __Instructions:__<br/>
 
 __Test:__<br/>
   The application can be tested here:<br/>
-  [I'm an inline-style link]https://game-slotmachine.herokuapp.com
+  https://game-slotmachine.herokuapp.com
