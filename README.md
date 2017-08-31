@@ -5,22 +5,22 @@ Date: 29/8-17<br/>
 Description: A casino slot-machine game.<br/>
 
 Tested on:
-  - desktop:
-    Chrome
-    Safari
-    Firefox
-    IE11
+  - desktop:<br/>
+    Chrome<br/>
+    Safari<br/>
+    Firefox<br/>
+    IE11<br/>
 
   - mobile:
     Android and IOS.
 
 Techniques:
-    JavaScript
-    Node.js (express)
-    Webpack
-    Babel
-    NPM
-    ES6
+    JavaScript<br/>
+    Node.js (express)<br/>
+    Webpack<br/>
+    Babel<br/>
+    NPM<br/>
+    ES6<br/>
 
 Installation:
  - npm install
