@@ -23,4 +23,8 @@ Installation:
 
 Instructions:<br/>
   Click button to play. Three different outcomes: no-win, small-win and big-win.<br/>
-  If small-win or big-win, bonus spin might occur if you are lucky.
+  If small-win or big-win, bonus spin might occur if you are lucky.<br />
+
+Test:<br/>
+  The application can be tested here:<br/>
+  https://game-slotmachine.herokuapp.com
