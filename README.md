@@ -22,7 +22,11 @@ Techniques:
     NPM
     ES6
 
-Setup:
-1. npm install
-2. npm run start
-3. Runs on port: 8080
+Installation:
+ - npm install
+ - npm run start
+ - Runs on port: 8080
+
+Instructions:
+  Click button to play. Three different outcomes: no-win, small-win and big-win.
+  If small-win or big-win, bonus spin might occur if you are lucky.
