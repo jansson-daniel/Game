@@ -5,27 +5,21 @@ Date: 29/8-17<br/>
 Description: A casino slot-machine game.<br/>
 
 Tested on:
-  - desktop:<br/>
-    Chrome<br/>
-    Safari<br/>
-    Firefox<br/>
-    IE11<br/>
-
-  - mobile:
-    Android and IOS.
+  - desktop: Chrome, Safari, Firefox, IE11
+  - mobile: Android and IOS.
 
 Techniques:
-    JavaScript<br/>
-    Node.js (express)<br/>
-    Webpack<br/>
-    Babel<br/>
-    NPM<br/>
-    ES6<br/>
+  - JavaScript<br/>
+  - Node.js (express)<br/>
+  - Webpack<br/>
+  - Babel<br/>
+  - NPM<br/>
+  - ES6<br/>
 
 Installation:
- - npm install
- - npm run start
- - Runs on port: 8080
+  - npm install
+  - npm run start
+  - Runs on port: 8080
 
 Instructions:<br/>
   Click button to play. Three different outcomes: no-win, small-win and big-win.<br/>
